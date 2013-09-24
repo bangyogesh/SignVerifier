@@ -1,0 +1,215 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Windows.Forms;
+using System.IO;
+
+namespace convertimagetomatrix
+{
+    public partial class Imagetoarray : Form
+    {
+        public Imagetoarray()
+        {
+            InitializeComponent();
+        }
+
+        private void Imagetoarray_Load(object sender, EventArgs e)
+        {
+
+
+        }
+        public int[][] ConvertArray(int[] Input, int size)
+        {
+            int[][] Output = new int[(int)Input.Length][];
+            for (int i = 0; i < Output.Length; i++)
+            {
+                Output[i] = new int[size];
+            }
+            System.IO.StreamWriter sw = new System.IO.StreamWriter(@"C:\OutFile.txt");
+            for (int i = 0; i < Input.Length; i += size)
+            {
+                for (int j = 0; j < size; j++)
+                {
+                    Output[i][j] = Input[i + j];
+                    sw.Write(Input[i + j]);
+                }
+                sw.WriteLine("");
+            }
+            sw.Close();
+            return Output;
+        }
+        public byte[] imageToByteArray(System.Drawing.Image imageIn)
+        {
+            MemoryStream ms = new MemoryStream();
+            imageIn.Save(ms, System.Drawing.Imaging.ImageFormat.Bmp );
+            return ms.ToArray();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            
+            String str = @"E:\signature\images\signatures\6.jpg";
+            Image img=Image.FromFile (str);
+            String str1 = @"E:\signature\images\signatures\11.jpg";
+            Image img1 = Image.FromFile(str1);
+            String str2 = @"E:\signature\images\signatures\21.jpg";
+            Image img2 = Image.FromFile(str2);
+            
+            
+            int i,j=0;
+            
+            
+            byte[] imarray = imageToByteArray(img);
+            byte[] imarray1 = imageToByteArray(img1);
+            byte[] imarray2 = imageToByteArray(img2);
+            
+            
+            int[] a = new int[imarray.Length];
+            for ( i = 0; i < imarray.Length; i++)
+            {
+                a[i] = (int)imarray[i];
+               
+            }
+        
+            
+            //int[][] array = ConvertArray(a, imarray.Length);
+            
+            int[] b = new int[imarray1.Length];
+            for (i = 0; i < imarray1.Length; i++)
+            {
+                b[i] = (int)imarray1[i];
+            }
+            
+            //int[][] array1 = ConvertArray(b, imarray1.Length);
+
+            int[] c = new int[imarray2.Length];
+            for (i = 0; i < imarray2.Length; i++)
+            {
+                c[i] = (int)imarray2[i];
+            }
+            foreach (byte z in c)
+            {
+                comboBox1.Items.Add(Convert.ToString(z));
+            }
+
+
+
+            label2.Text = Convert.ToString(imarray.Length);
+            label3.Text = Convert.ToString(imarray1.Length);
+            label7.Text = Convert.ToString(imarray2.Length);
+
+            label4.Text = Convert.ToString(a[3]);
+            label5.Text = Convert.ToString(b[3]);
+            label8.Text = Convert.ToString(c[3]);
+          
+
+            int[] array2 = new int [a.Length +b.Length+c.Length];
+            /*for (int m = 0; i < array1.Length; m++)
+            {
+                array2[m] = new int[array1[m].Length ];
+            }*/
+            //int [,]array2=new int[array1.Length,array1.Length];
+
+            double x = 0;
+            
+            for (i = 0; i < a.Length && i<b.Length && i<c.Length; i++)
+            {
+                
+                    array2[i] = a[i] + b[i]+c[i];
+                    x = x + array2[i];
+                
+            }
+            x = x / i;
+            //label9.Text = "Average of image pixcel is " + Convert.ToString(x);
+            label6.Text ="Addition is "+ Convert.ToString(array2[3]);
+            
+            double [] mean=new double[a.Length+b.Length+c.Length];
+            for (i = 0; i < a.Length && i<b.Length && i<c.Length; i++)
+            {
+                mean[i] = 0.33 * (a[i] + b[i] + c[i]);
+            } 
+            label10.Text = "Mean is " + Convert.ToString(mean[3]);
+
+            
+            double []am=new double[a.Length];
+            for (i = 0; i < a.Length; i++)
+            {
+                am[i]=a[i]-mean[i];
+            }
+            label11.Text = "Mean of particular pixel in array of image1 is " + Convert.ToString(am[3]);
+
+
+            double[] bm = new double[b.Length];
+            for (i = 0; i < b.Length; i++)
+            {
+                bm[i] = b[i] - mean[i];
+            }
+            label12.Text = "Mean of particular pixel in array of image2 is " + Convert.ToString(bm[3]);
+
+
+            double[] cm = new double[c.Length];
+            for (i = 0; i < c.Length; i++)
+            {
+                cm[i] = c[i] - mean[i];
+            }
+            label13.Text = "Mean of particular pixel in array of image3 is " + Convert.ToString(cm[3]);
+
+            //int[][] array = ConvertArray(a, imarray.Length);
+            
+            
+            int[][] A = ConvertArray(array2,3);
+            for (int m = 0; m < am.Length; m++)
+            {
+                    A[m][0]=(int)am[m];
+                
+            }
+            label14.Text = " " + Convert.ToString(A[3][0]);
+
+            for (int m = 0; m < bm.Length; m++)
+            {
+                A[m][1] = (int)bm[m];
+
+            }
+            label15.Text = " " + Convert.ToString(A[3][1]);
+
+            for (int m = 0; m < cm.Length; m++)
+            {
+                A[m][2] = (int)cm[m];
+
+            }
+            label16.Text = " " + Convert.ToString(A[3][2]);
+            /*int cnt = 0;
+            for (int m = 0; m < array2.Length; m++)
+            {
+
+                if (cnt == 100)
+                {
+                    textBox1.Text += Environment.NewLine;
+                    cnt = 0;
+                }
+                    textBox1.Text+=" "+ array2[m];
+                    cnt++;
+                
+                
+            }
+            
+             
+           /* dataGridView1.DataSource = (from arr in ai select new { Col1 = arr[0], Col2 = arr[1] });
+
+            var activationContext = Type.GetTypeFromProgID("matlab.application.single");
+            var matlab = (MLApp.MLApp)Activator.CreateInstance(activationContext);
+              */
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+       
+    }
+}
